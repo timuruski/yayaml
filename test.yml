@@ -1,0 +1,9 @@
+---
+en:
+  page1:
+    button: Hello
+  page2:
+    button: Goodbye
+fr:
+  page1:
+    button: Bonjour
