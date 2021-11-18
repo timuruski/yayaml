@@ -52,11 +52,14 @@ module Yay
       @search_pattern = search_pattern
       @ignore_case = ignore_case
       @match_path = match_path
+    end
 
+    def start_document(*args)
       @state = :a
       @prev = nil
       @keys = []
       @line = 0
+      @col = 0
     end
 
     def start_mapping(*args)
@@ -65,7 +68,7 @@ module Yay
         when :a, :c
           @state = :b
         else
-          fail
+          panic("start_mapping")
         end
       end
     end
@@ -77,7 +80,7 @@ module Yay
           @state = :b
           @keys.pop
         else
-          fail
+          panic("end_mapping")
         end
       end
     end
@@ -93,13 +96,14 @@ module Yay
           handle_leaf(value)
           @keys.pop
         else
-          fail
+          panic("scalar")
         end
       end
     end
 
     def event_location(start_line, start_column, end_line, end_column)
       @line = start_line + 1
+      @col = start_column + 1
     end
 
     private def handle_leaf(value)
@@ -125,14 +129,14 @@ module Yay
       end
     end
 
-    private def line_num
-      parser.mark.line + 1
-    end
-
     private def transition(event)
       @prev = @state
       yield
       puts "#@prev -> (#{event}) -> #@state" if @debug
+    end
+
+    private def panic(event)
+      fail "Failed to parse #{event} at #{ARGF.path}:#{@line}:#{@col}"
     end
   end
 end

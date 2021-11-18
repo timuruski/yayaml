@@ -1,0 +1,17 @@
+---
+en:
+  page1:
+    button: Hello world!
+  page2:
+    button: Goodbye
+  page3:
+    shopping:
+      - eggs
+      - butter
+      - bacon
+    button: Go shopping
+es:
+  page1:
+    button: "¡Hola, el mundo!"
+  page2:
+    button: Adios
