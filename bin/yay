@@ -1,26 +1,40 @@
 #!/usr/bin/env ruby
 
 require "psych"
+require "optparse"
 
 at_exit do
-  abort "Usage: yay <search pattern> <input>" if ARGV.length < 1
-
-  search_pattern = ARGV.shift
-  Yay::Command.new(search_pattern, ARGF).run
+  Yay::Command.new.run(ARGF)
 end
 
 module Yay
+  BOLD_RED = "\e[1m\e[38;5;1m"
+  RESET = "\e[0m"
+
   class Command
-    def initialize(search_pattern, input)
-      @search_pattern = search_pattern
-      @input = input
+    def initialize(args = ARGV)
+      parser = OptionParser.new do |parser|
+        parser.on("-i", "--ignore-case") { |value| @ignore_case = value }
+        parser.on("-p", "--search-path") { |value| @match_path = value }
+      end
+
+      parser.banner = "Usage yay [options] <search pattern> <input>"
+      if args.empty?
+        abort parser.help
+      else
+        parser.parse!
+      end
+
+      # Parse out search terms before ARGF is used for input.
+      search_words = ARGV.take_while { |w| !File.exists?(w) }
+      args.slice!(0, search_words.length)
+
+      @search_pattern = search_words.join(" ")
     end
 
-    def run
-      handler = YayHandler.new(@search_pattern)
-      parser = Psych::Parser.new(handler)
-      handler.parser = parser
-      parser.parse(@input)
+    def run(input)
+      handler = YayHandler.new(@search_pattern, @match_path, @ignore_case)
+      Psych::Parser.new(handler).parse(input)
     end
   end
 
@@ -29,18 +43,20 @@ module Yay
     # a -> start_map -> b
     # b -> scalar -> c (push key)
     # b -> end_map -> b (pop key)
-    # c -> scalar -> b (push value, pop key)
-    # c -> start_map -> b (push map)
+    # c -> scalar -> b (pop key, handle value)
+    # c -> start_map -> b (push key)
     # c -> end_map -> b (pop key)
 
-    attr_accessor :parser
-
-    def initialize(search_pattern, *args)
+    def initialize(search_pattern, match_path, ignore_case, *args)
       @debug = ENV["DEBUG"]
       @search_pattern = search_pattern
+      @ignore_case = ignore_case
+      @match_path = match_path
+
       @state = :a
       @prev = nil
       @keys = []
+      @line = 0
     end
 
     def start_mapping(*args)
@@ -71,7 +87,7 @@ module Yay
         case @state
         when :b
           @state = :c
-          @keys << value
+          @keys.push(value)
         when :c
           @state = :b
           handle_leaf(value)
@@ -82,10 +98,30 @@ module Yay
       end
     end
 
+    def event_location(start_line, start_column, end_line, end_column)
+      @line = start_line + 1
+    end
+
     private def handle_leaf(value)
       path = @keys.join(".")
-      if path.end_with?(@search_pattern)
-        puts "#{path}:#{line_num}: #{value}"
+
+      if @match_path
+        if path[@search_pattern]
+          path.sub!(@search_pattern, "#{BOLD_RED}#{@search_pattern}#{RESET}")
+          puts "#{path}:#{@line}: #{value}"
+        end
+      elsif @ignore_case
+        # TODO Clean this up, it's gross.
+        if index = value.downcase.index(@search_pattern.downcase)
+          match = value[index, @search_pattern.length]
+          value[index, @search_pattern.length] = "#{BOLD_RED}#{match}#{RESET}"
+          puts "#{path}:#{@line}: #{value}"
+        end
+      else
+        if value[@search_pattern]
+          match_value = value.sub(@search_pattern, "#{BOLD_RED}#{@search_pattern}#{RESET}")
+          puts "#{path}:#{@line}: #{match_value}"
+        end
       end
     end
 
