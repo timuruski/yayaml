@@ -4,7 +4,7 @@ require "psych"
 require "optparse"
 
 at_exit do
-  Yay::Command.new.run(ARGF)
+  Yay::Command.new.run
 end
 
 module Yay
@@ -32,8 +32,20 @@ module Yay
       @search_pattern = search_words.join(" ")
     end
 
-    def run(input)
-      handler = YayHandler.new(@search_pattern, @match_path, @ignore_case)
+    def run
+      if ARGV.empty?
+        parse_yaml($stdin, "stdin")
+      else
+        ARGV.each do |filename|
+          File.open(filename) do |input|
+            parse_yaml(input, filename)
+          end
+        end
+      end
+    end
+
+    private def parse_yaml(input, filename)
+      handler = YayHandler.new(@search_pattern, @match_path, @ignore_case, filename)
       Psych::Parser.new(handler).parse(input)
     end
   end
@@ -47,14 +59,17 @@ module Yay
     # c -> start_map -> b (push key)
     # c -> end_map -> b (pop key)
 
-    def initialize(search_pattern, match_path, ignore_case, *args)
+    def initialize(search_pattern, match_path, ignore_case, filename, *args)
       @debug = ENV["DEBUG"]
       @search_pattern = search_pattern
       @ignore_case = ignore_case
       @match_path = match_path
+      @filename = filename
     end
 
     def start_document(*args)
+      debug "--> Start document #{@filename}"
+
       @state = :a
       @prev = nil
       @keys = []
@@ -132,7 +147,11 @@ module Yay
     private def transition(event)
       @prev = @state
       yield
-      puts "#@prev -> (#{event}) -> #@state" if @debug
+      # debug "#@prev -> (#{event}) -> #@state"
+    end
+
+    private def debug(msg)
+      warn msg if @debug
     end
 
     private def panic(event)
