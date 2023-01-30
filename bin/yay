@@ -61,7 +61,7 @@ module Yay
 
     def initialize(search_pattern, match_path, ignore_case, filename, *args)
       @debug = ENV["DEBUG"]
-      @search_pattern = search_pattern
+      @search_pattern = Regexp.new(search_pattern, ignore_case ? Regexp::IGNORECASE : nil)
       @ignore_case = ignore_case
       @match_path = match_path
       @filename = filename
@@ -125,21 +125,14 @@ module Yay
       path = @keys.join(".")
 
       if @match_path
-        if path[@search_pattern]
-          path.sub!(@search_pattern, "#{BOLD_RED}#{@search_pattern}#{RESET}")
-          puts "#{path}:#{@line}: #{value}"
-        end
-      elsif @ignore_case
-        # TODO Clean this up, it's gross.
-        if index = value.downcase.index(@search_pattern.downcase)
-          match = value[index, @search_pattern.length]
-          value[index, @search_pattern.length] = "#{BOLD_RED}#{match}#{RESET}"
-          puts "#{path}:#{@line}: #{value}"
+        if match = path.match(@search_pattern)
+          path_matched = path.sub(@search_pattern, "#{BOLD_RED}#{match}#{RESET}")
+          puts "#{path_matched}:#{@line}: #{value}"
         end
       else
-        if value[@search_pattern]
-          match_value = value.sub(@search_pattern, "#{BOLD_RED}#{@search_pattern}#{RESET}")
-          puts "#{path}:#{@line}: #{match_value}"
+        if match = value.match(@search_pattern)
+          value_matched = value.sub(@search_pattern, "#{BOLD_RED}#{match}#{RESET}")
+          puts "#{path}:#{@line}: #{value_matched}"
         end
       end
     end
