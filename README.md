@@ -1,15 +1,28 @@
 # YAY
 
-This is a sketch of a command line tool for searching big YAML files.
+Yay is a command line tool for searching YAML files. It's particlularly useful for finding
+values or paths for localization files, by searching across multiple YAML files.
 
-There are two models for searching.
+If you want to find the key for a given string:
 
-1. Search for a scalar value and output the path and line number for each match.
-2. Search for a path (relative or absolute) and output the line number and resulting value (scalar or map).
+```
+$ yay "Foo Bar" locales/*.yml
 
-## Todo
-- Handle sequences
-- Handle multiple documents
-- Handle anchors
+en-US.foo.bar.qux:1996: Foo Bar Qux
+en-GB.foo.bar.qux:1990: Foo Bar Qux
+```
+
+If you want to find a value for a given key:
+
+```
+$ yay -p "foo.bar" locales/*.yml
+
+en-US.foo.bar:1996: Foo Bar
+en-GB.foo.bar:1990: Foo Bar
+```
+
+Searches can be regular expressions, and/or case-insensitive.
+
+---
 
 See also to [jq](https://github.com/stedolan/jq)
