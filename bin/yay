@@ -26,7 +26,7 @@ module Yay
       end
 
       # Parse out search terms before ARGF is used for input.
-      search_words = ARGV.take_while { |w| !File.exists?(w) }
+      search_words = ARGV.take_while { |w| !File.exist?(w) }
       args.slice!(0, search_words.length)
 
       @search_pattern = search_words.join(" ")
