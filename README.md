@@ -22,6 +22,7 @@ en-GB.foo.bar:1990: Foo Bar
 ```
 
 Searches can be regular expressions, and/or case-insensitive.
+YAML files will be globbed if a directory is provided.
 
 ---
 

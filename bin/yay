@@ -19,27 +19,26 @@ module Yay
         parser.on("-p", "--search-path") { |value| @match_path = value }
       end
 
-      parser.banner = "Usage yay [options] <search pattern> <input>"
+      parser.banner = "Usage yay [options] \"<search pattern>\" <inputs>"
       if args.empty?
         abort parser.help
       else
         parser.parse!
       end
 
-      # Parse out search terms before ARGF is used for input.
-      search_words = ARGV.take_while { |w| !File.exist?(w) }
-      args.slice!(0, search_words.length)
-
-      @search_pattern = search_words.join(" ")
+      @search_pattern = args.shift
+      @paths = args.flat_map { |filename| File.directory?(filename) ? Dir.glob("#{filename}/**/*.yml") : filename }
+      @paths.delete("--")
     end
 
     def run
-      if ARGV.empty?
-        parse_yaml($stdin, "stdin")
+      if @paths.empty?
+        warn "Reading from STDIN..." if STDIN.tty?
+        parse_yaml(STDIN, "STDIN")
       else
-        ARGV.each do |filename|
-          File.open(filename) do |input|
-            parse_yaml(input, filename)
+        @paths.each do |path|
+          File.open(path) do |file|
+            parse_yaml(file, file.path)
           end
         end
       end
