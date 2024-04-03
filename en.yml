@@ -1,0 +1,22 @@
+en:
+  hello: "Hello world"
+  timeline:
+    events:
+      invoice:
+        payment_failed: "Invoice payment failed"
+      outstanding_invoices_paid: Outstanding invoices paid
+      source_added: Customer added default credit card
+      source_updated: Customer updated default credit card
+      subscription:
+        canceled: "Subscription canceled"
+        canceled_at_period_end: "Subscription set to cancel at the end of the current billing cycle"
+        subscription_schedule_released: "Subscription schedule released"
+        updated_through_creation: "Subscription was updated via immediate downgrade in Stripe"
+      testing:
+        event_for_test_without_interpolation: "testing"
+        event_for_test_with_interpolation: "testing %{test_var}"
+  errors:
+    business_address:
+      argument_error:
+        already_exists: "A business address is already associated with this account"
+        incorrect_zip_format: "should be in the format of 12345 or 12345-6789"
