@@ -128,15 +128,21 @@ module Yay
 
       if @match_path
         if match = path.match(@search_pattern)
-          path_matched = path.sub(@search_pattern, "#{BOLD_RED}#{match}#{RESET}")
-          # puts "#{path_matched}:#{@line}: #{value}"
-          puts "#{@filename}:#{@line} #{path_matched}: #{value}"
+          if $stdout.tty?
+            path_matched = path.sub(@search_pattern, "#{BOLD_RED}#{match}#{RESET}")
+            puts "#{@filename}:#{@line} #{path_matched}: #{value}"
+          else
+            puts "#{@filename}:#{@line} #{path}: #{value}"
+          end
         end
       else
         if match = value.match(@search_pattern)
-          value_matched = value.sub(@search_pattern, "#{BOLD_RED}#{match}#{RESET}")
-          # puts "#{path}:#{@line}: #{value_matched}"
-          puts "#{@filename}:#{@line} #{path}: #{value_matched}"
+          if $stdout.tty?
+            value_matched = value.sub(@search_pattern, "#{BOLD_RED}#{match}#{RESET}")
+            puts "#{@filename}:#{@line} #{path}: #{value_matched}"
+          else
+            puts "#{@filename}:#{@line} #{path}: #{value}"
+          end
         end
       end
     end
