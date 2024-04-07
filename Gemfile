@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in yay-rb.gemspec
+# Specify your gem's dependencies in yayaml.gemspec
 gemspec
 
 gem "rake", "~> 13.0"

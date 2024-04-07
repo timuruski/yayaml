@@ -1,6 +1,6 @@
 require "psych"
 
-module Yay
+module Yayaml
   class Handler < Psych::Handler
     # State transitions:
     # branch -> start_map -> branch (no-op)

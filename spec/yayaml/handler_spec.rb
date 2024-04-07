@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Yay::Handler do
+RSpec.describe Yayaml::Handler do
   it "works" do
     yaml = <<~YAML
       abc:
@@ -8,11 +8,11 @@ RSpec.describe Yay::Handler do
         xyz: 234
     YAML
 
-    matcher = Yay::Matcher.new("123")
+    matcher = Yayaml::Matcher.new("123")
     allow(matcher).to receive(:on_node).and_call_original
-    handler = Yay::Handler.new(matcher, filename: "example.yml")
+    handler = Yayaml::Handler.new(matcher, filename: "example.yml")
 
-    Psych::Parser.new(handler).parse(yaml)
+    expect { Psych::Parser.new(handler).parse(yaml) }.to output.to_stdout
 
     expect(matcher).to have_received(:on_node).with(["abc", "ghj"], "123")
     expect(matcher).to have_received(:on_node).with(["abc", "xyz"], "234")
