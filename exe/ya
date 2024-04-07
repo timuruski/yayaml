@@ -31,6 +31,7 @@ module Yay
       @paths.delete("--")
     end
 
+    # TODO: Use abort if all YAML paths fail to parse.
     def run
       if @paths.empty?
         warn "Reading from STDIN..." if STDIN.tty?
@@ -47,6 +48,8 @@ module Yay
     private def parse_yaml(input, filename)
       handler = YayHandler.new(@search_pattern, @match_path, @ignore_case, filename)
       Psych::Parser.new(handler).parse(input)
+    rescue Psych::SyntaxError => e
+      warn "Failed to parse YAML #{e.file}:#{e.line}:#{e.offset}"
     end
   end
 
