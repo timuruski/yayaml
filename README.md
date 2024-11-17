@@ -1,6 +1,6 @@
 # yayaml
 
-Ya is a command line tool for searching YAML files. It's particlularly useful for finding
+Yayaml is a command line tool for searching YAML files. It's particlularly useful for finding
 values or paths for localization files, by searching across multiple YAML files.
 
 YAML files will be globbed if a directory is provided.

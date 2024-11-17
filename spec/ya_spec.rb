@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe "exe/ya" do
   it "searches for YAML values for a pattern" do
-    expect { system("exe/ya Hello spec/fixtures") }
+    expect { system("exe/ya hello spec/fixtures") }
       .to output(<<~EOS).to_stdout_from_any_process
         spec/fixtures/en-US.yml:4 en-US.app.greeting: Hello, world!
       EOS
@@ -12,6 +12,7 @@ RSpec.describe "exe/ya" do
     expect { system("exe/ya -p greeting spec/fixtures") }
       .to output(<<~EOS).to_stdout_from_any_process
         spec/fixtures/en-US.yml:4 en-US.app.greeting: Hello, world!
+        spec/fixtures/es-ES.yml:4 es-ES.app.greeting: ¡Hola, mundo!
         spec/fixtures/fr-FR.yml:4 fr-FR.app.greeting: Bonjour le monde!
       EOS
   end

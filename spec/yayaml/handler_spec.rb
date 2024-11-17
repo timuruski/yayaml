@@ -1,8 +1,9 @@
 require "spec_helper"
 
 RSpec.describe Yayaml::Handler do
-  it "works" do
+  it "calls on_node for terminal nodes" do
     yaml = <<~YAML
+      ---
       abc:
         ghj: 123
         xyz: 234
@@ -14,7 +15,7 @@ RSpec.describe Yayaml::Handler do
 
     expect { Psych::Parser.new(handler).parse(yaml) }.to output.to_stdout
 
-    expect(matcher).to have_received(:on_node).with(["abc", "ghj"], "123")
-    expect(matcher).to have_received(:on_node).with(["abc", "xyz"], "234")
+    expect(matcher).to have_received(:on_node).with(["abc", "ghj"], "123", "example.yml", 3)
+    expect(matcher).to have_received(:on_node).with(["abc", "xyz"], "234", "example.yml", 4)
   end
 end

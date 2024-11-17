@@ -10,6 +10,10 @@ module Yayaml
     # branch -> end_map -> branch (pop key)
     # leaf -> end_map -> branch (pop key)
 
+    # For details on Psych events:
+    # https://ruby-doc.org/3.2.2/exts/psych/Psych/Handler.html
+    # https://github.com/ruby/psych/blob/master/lib/psych/handler.rb
+
     attr_reader :matcher, :filename
 
     def initialize(matcher, filename: nil)
@@ -58,7 +62,7 @@ module Yayaml
           @keys.push(value)
         when :leaf
           @state = :branch
-          matcher.on_node(@keys.dup, value)
+          matcher.on_node(@keys.dup, value, @filename, @line)
           @keys.pop
         else
           panic("scalar")

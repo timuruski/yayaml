@@ -1,5 +1,7 @@
-module Yayaml
-end
+$LOAD_PATH.unshift(__dir__)
 
-require_relative "yayaml/handler"
-require_relative "yayaml/matcher"
+module Yayaml
+  autoload :Command, "yayaml/command"
+  autoload :Handler, "yayaml/handler"
+  autoload :Matcher, "yayaml/matcher"
+end
