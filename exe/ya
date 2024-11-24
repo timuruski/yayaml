@@ -2,4 +2,4 @@
 
 require_relative "../lib/yayaml"
 
-Yayaml::Command.new.run
+Yayaml::Command.build(ARGV).run
