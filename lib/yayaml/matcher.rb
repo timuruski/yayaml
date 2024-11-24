@@ -7,7 +7,6 @@ module Yayaml
     RESET = "\e[0m"
 
     # TODO: Handle glob style patterns
-    # TODO: Handle ignore-case option, make it enabled by default
     def initialize(pattern, match_path: false, ignore_case: true)
       flags = !!ignore_case ? Regexp::IGNORECASE : 0
       @pattern = Regexp.compile(pattern, flags)
