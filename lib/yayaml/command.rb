@@ -11,6 +11,7 @@ module Yayaml
       parser = OptionParser.new do |parser|
         parser.on("-d", "--debug") { $DEBUG = true }
         parser.on("-s", "--case-sensitive") { |value| opts[:case_sensitive] = value }
+        parser.on("--flatten") { |value| opts[:search_pattern] = "." }
         parser.on("-p", "--match-path") { |value| opts[:match_path] = value }
       end
 
@@ -21,7 +22,7 @@ module Yayaml
         parser.parse!
       end
 
-      opts[:search_pattern] = args.shift.to_s
+      opts[:search_pattern] ||= args.shift.to_s
       opts[:paths] = args.flat_map { |filename| File.directory?(filename) ? Dir.glob("#{filename}/**/*.yml") : filename }
       opts[:paths].delete("--")
 
@@ -32,8 +33,8 @@ module Yayaml
     attr_reader :search_pattern, :paths
 
     def initialize(case_sensitive: false, match_path: false, paths: [], search_pattern: "")
-      @case_sensitive = false
-      @match_path = false
+      @case_sensitive = case_sensitive
+      @match_path = match_path
       @paths = paths.to_a
       @search_pattern = search_pattern
     end

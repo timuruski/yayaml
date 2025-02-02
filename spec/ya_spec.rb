@@ -17,6 +17,14 @@ RSpec.describe "exe/ya" do
       EOS
   end
 
+  it "can flatten a YAML file to pipe to other commands" do
+    expect { system("exe/ya --flatten spec/fixtures/en-US.yml") }
+      .to output(<<~EOS).to_stdout_from_any_process
+        spec/fixtures/en-US.yml:4 en-US.app.greeting: Hello, world!
+        spec/fixtures/en-US.yml:5 en-US.app.farewell: Goodbye, world!
+      EOS
+  end
+
   it "raises an error if the file isn't valid YAML" do
     expect { system("exe/ya -p greeting spec/spec_helper.rb") }
       .to output(<<~EOS).to_stderr_from_any_process

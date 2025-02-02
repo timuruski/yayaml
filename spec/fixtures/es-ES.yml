@@ -2,3 +2,4 @@
 es-ES:
   app:
     greeting: ¡Hola, mundo!
+    farewell: ¡Adiós, mundo!

@@ -2,3 +2,4 @@
 fr-FR:
   app:
     greeting: Bonjour le monde!
+    farewell: Au revoir le monde!
