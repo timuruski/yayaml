@@ -7,21 +7,30 @@ module Yayaml
     RESET = "\e[0m"
 
     # TODO: Handle glob style patterns
-    def initialize(pattern, match_path: false, ignore_case: true)
+    # TODO: Handle ignore-case option, make it enabled by default
+    def initialize(pattern, list_keys: false, match_path: false, ignore_case: true)
       flags = !!ignore_case ? Regexp::IGNORECASE : 0
       @pattern = Regexp.compile(pattern, flags)
       @match_path = match_path
       @ignore_case = ignore_case
+      @list_keys = list_keys
     end
 
     def on_node(keys, value, filename, line)
       path = keys.join(".")
 
-      if @match_path
+      if @list_keys
+        list_key(path, value, filename, line)
+      elsif @match_path
         match_path(path, value, filename, line)
       else
         match_value(path, value, filename, line)
       end
+    end
+
+    private def list_key(path, value, filename, line)
+      puts "#{filename}:#{line} #{path}"
+      # puts path
     end
 
     private def match_path(path, value, filename, line)

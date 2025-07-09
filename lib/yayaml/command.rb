@@ -10,6 +10,7 @@ module Yayaml
 
       parser = OptionParser.new do |parser|
         parser.on("-d", "--debug") { $DEBUG = true }
+        parser.on("-l", "--list_keys") { opts[:list_keys] = true }
         parser.on("-s", "--case-sensitive") { |value| opts[:case_sensitive] = value }
         parser.on("--flatten") { |value| opts[:search_pattern] = "." }
         parser.on("-p", "--match-path") { |value| opts[:match_path] = value }
@@ -32,9 +33,10 @@ module Yayaml
     attr_reader :case_sensitive, :match_path
     attr_reader :search_pattern, :paths
 
-    def initialize(case_sensitive: false, match_path: false, paths: [], search_pattern: "")
-      @case_sensitive = case_sensitive
-      @match_path = match_path
+    def initialize(case_sensitive: false, list_keys: false, match_path: false, paths: [], search_pattern: "")
+      @case_sensitive = false
+      @list_keys = list_keys
+      @match_path = false
       @paths = paths.to_a
       @search_pattern = search_pattern
     end
@@ -55,7 +57,7 @@ module Yayaml
 
     # TODO: Move this out of the Command core
     private def parse_yaml(input, filename)
-      matcher = Matcher.new(@search_pattern, match_path: @match_path, ignore_case: !@case_sensitive)
+      matcher = Matcher.new(@search_pattern, list_keys: @list_keys, match_path: @match_path, ignore_case: !@case_sensitive)
       handler = Handler.new(matcher, filename: filename)
       Psych::Parser.new(handler).parse(input)
     rescue Psych::SyntaxError => e
