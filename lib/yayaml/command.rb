@@ -23,7 +23,7 @@ module Yayaml
       end
 
       opts[:search_pattern] ||= args.shift.to_s
-      opts[:paths] = args.flat_map { |filename| File.directory?(filename) ? Dir.glob("#{filename}/**/*.yml") : filename }
+      opts[:paths] = args.flat_map { |filename| File.directory?(filename) ? Dir.glob(File.join(filename, "**/*.yml")) : filename }
       opts[:paths].delete("--")
 
       new(**opts)
