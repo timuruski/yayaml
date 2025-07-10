@@ -5,6 +5,7 @@ module Yayaml
     def self.build(args)
       opts = {
         case_sensitive: false,
+        list_keys: false,
         match_path: false
       }
 
@@ -12,8 +13,8 @@ module Yayaml
         parser.on("-d", "--debug") { $DEBUG = true }
         parser.on("-l", "--list_keys") { opts[:list_keys] = true }
         parser.on("-s", "--case-sensitive") { |value| opts[:case_sensitive] = value }
-        parser.on("--flatten") { |value| opts[:search_pattern] = "." }
-        parser.on("-p", "--match-path") { |value| opts[:match_path] = value }
+        # parser.on("--flatten") { |value| opts[:search_pattern] = "" }
+        parser.on("-p", "--match-path") { opts[:match_path] = true }
       end
 
       parser.banner = "Usage yay [options] \"<search pattern>\" <inputs>"
@@ -36,7 +37,7 @@ module Yayaml
     def initialize(case_sensitive: false, list_keys: false, match_path: false, paths: [], search_pattern: "")
       @case_sensitive = false
       @list_keys = list_keys
-      @match_path = false
+      @match_path = match_path
       @paths = paths.to_a
       @search_pattern = search_pattern
     end
