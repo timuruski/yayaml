@@ -11,7 +11,7 @@ module Yayaml
 
       parser = OptionParser.new do |parser|
         parser.on("-d", "--debug") { $DEBUG = true }
-        parser.on("-l", "--list_keys") { opts[:list_keys] = true }
+        parser.on("-l", "--list_keys") { opts[:list_keys] = true; opts[:search_pattern] = "" }
         parser.on("-s", "--case-sensitive") { |value| opts[:case_sensitive] = value }
         # parser.on("--flatten") { |value| opts[:search_pattern] = "" }
         parser.on("-p", "--match-path") { opts[:match_path] = true }
